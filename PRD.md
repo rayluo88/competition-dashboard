@@ -51,9 +51,12 @@ A mobile-friendly web application to manage a friendly team pickleball competiti
 *   **Correction**: Admin can edit rosters for past games if a mistake was made (audit log optional).
 
 ### 3.4. Public View
+*   **Game Dashboard (Landing Page)**:
+    *   **Primary Display**: Big font showing Total Games Won for Team A vs Team B.
+    *   **Secondary Display**: Smaller font showing Total Points Scored.
 *   Mobile-first responsive design.
 *   Shows "Now Playing", "Upcoming", and "Results".
-*   Team Standings.
+
 
 ## 4. Technical Architecture
 

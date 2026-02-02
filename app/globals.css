@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Warm Off-White Background */
+    --background: 0 20% 98%;
+    /* Very faint pink/warm white */
+    --foreground: 350 50% 15%;
+    /* Dark Maroon Text */
+
+    /* Card: White with slight warmth */
+    --card: 0 0% 100%;
+    --card-foreground: 350 50% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 350 50% 15%;
+
+    /* Primary: Festive Red */
+    --primary: 350 80% 50%;
+    /* Vibrant Red */
+    --primary-foreground: 45 100% 90%;
+    /* Light Gold text on Red */
+
+    /* Secondary: Gold/Yellow */
+    --secondary: 45 90% 60%;
+    /* Rich Gold */
+    --secondary-foreground: 350 60% 10%;
+    /* Dark Maroon on Gold */
+
+    --muted: 350 20% 96%;
+    --muted-foreground: 350 30% 50%;
+
+    --accent: 350 30% 95%;
+    /* Pinkish hover */
+    --accent-foreground: 350 80% 50%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 350 30% 90%;
+    --input: 350 30% 90%;
+    --ring: 350 80% 50%;
+
+    --radius: 1rem;
+    /* Rounder corners for friendly vibe */
+  }
+
+  .dark {
+    /* Deep Red Background */
+    --background: 350 50% 10%;
+    --foreground: 45 20% 90%;
+
+    --card: 350 40% 15%;
+    --card-foreground: 45 20% 90%;
+
+    --popover: 350 40% 15%;
+    --popover-foreground: 45 20% 90%;
+
+    --primary: 350 80% 60%;
+    --primary-foreground: 45 100% 95%;
+
+    --secondary: 45 80% 50%;
+    --secondary-foreground: 350 50% 10%;
+
+    --muted: 350 30% 20%;
+    --muted-foreground: 350 20% 70%;
+
+    --accent: 350 30% 25%;
+    --accent-foreground: 45 80% 60%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 350 30% 25%;
+    --input: 350 30% 25%;
+    --ring: 350 80% 60%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
 }
