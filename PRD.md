@@ -19,6 +19,10 @@ A mobile-friendly web application to manage a friendly team pickleball competiti
     *   2 Teams (e.g., Team A, Team B).
     *   **Composition**: 10 Players per team (6 Female, 4 Male).
     *   Storage: Name, Gender, Team ID.
+*   **Player Database Management**:
+    *   **CRUD Operations**: Admin can Create, Read, Update, and Delete players.
+    *   **Input Fields**: Name, Gender (M/F), Team (A/B).
+    *   **Validation**: Ensure Name is not empty.
 *   **Schedule Generation**:
     *   **Timeframe**: 10:00 AM to 1:30 PM (3.5 Hours).
     *   **Interval**: 15 minutes per slot. Total 14 Time Slots.
@@ -51,12 +55,9 @@ A mobile-friendly web application to manage a friendly team pickleball competiti
 *   **Correction**: Admin can edit rosters for past games if a mistake was made (audit log optional).
 
 ### 3.4. Public View
-*   **Game Dashboard (Landing Page)**:
-    *   **Primary Display**: Big font showing Total Games Won for Team A vs Team B.
-    *   **Secondary Display**: Smaller font showing Total Points Scored.
 *   Mobile-first responsive design.
 *   Shows "Now Playing", "Upcoming", and "Results".
-
+*   Team Standings.
 
 ## 4. Technical Architecture
 
