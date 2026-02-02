@@ -133,12 +133,19 @@ function CaptainContent() {
                                 value={p1?.id || ''}
                                 onChange={(e) => handleSelectPlayer(game.id, 1, e.target.value)}
                             >
-                                <option value="">Select Player 1</option>
-                                {players.map(p => (
-                                    <option key={p.id} value={p.id} disabled={isPlayerResting(game.sequence_number, gameHistory[p.id] || [])}>
-                                        {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || []) ? '(Resting)' : ''}
-                                    </option>
-                                ))}
+                                <option value="">Select Player 1 {game.game_type === 'XD' ? '(Female)' : ''}</option>
+                                {players
+                                    .filter(p => {
+                                        if (game.game_type === 'WD') return p.gender === 'Female';
+                                        if (game.game_type === 'MD') return p.gender === 'Male';
+                                        if (game.game_type === 'XD') return p.gender === 'Female'; // Slot 1 for XD is Female
+                                        return true;
+                                    })
+                                    .map(p => (
+                                        <option key={p.id} value={p.id} disabled={isPlayerResting(game.sequence_number, gameHistory[p.id] || [])}>
+                                            {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || []) ? '(Resting)' : ''}
+                                        </option>
+                                    ))}
                             </select>
 
                             <select
@@ -147,12 +154,19 @@ function CaptainContent() {
                                 value={p2?.id || ''}
                                 onChange={(e) => handleSelectPlayer(game.id, 2, e.target.value)}
                             >
-                                <option value="">Select Player 2</option>
-                                {players.map(p => (
-                                    <option key={p.id} value={p.id} disabled={p.id === p1?.id || isPlayerResting(game.sequence_number, gameHistory[p.id] || [])}>
-                                        {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || []) ? '(Resting)' : ''}
-                                    </option>
-                                ))}
+                                <option value="">Select Player 2 {game.game_type === 'XD' ? '(Male)' : ''}</option>
+                                {players
+                                    .filter(p => {
+                                        if (game.game_type === 'WD') return p.gender === 'Female';
+                                        if (game.game_type === 'MD') return p.gender === 'Male';
+                                        if (game.game_type === 'XD') return p.gender === 'Male'; // Slot 2 for XD is Male
+                                        return true;
+                                    })
+                                    .map(p => (
+                                        <option key={p.id} value={p.id} disabled={p.id === p1?.id || isPlayerResting(game.sequence_number, gameHistory[p.id] || [])}>
+                                            {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || []) ? '(Resting)' : ''}
+                                        </option>
+                                    ))}
                             </select>
                         </CardContent>
                     </Card>
