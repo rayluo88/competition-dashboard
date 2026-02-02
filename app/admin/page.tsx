@@ -44,8 +44,11 @@ async function seedPlayers() {
     else alert('Players seeded successfully!');
 }
 
+import PlayerManager from '@/components/admin/PlayerManager';
+
 export default function AdminPage() {
     const [games, setGames] = useState<Game[]>([]);
+    const [view, setView] = useState<'schedule' | 'players'>('schedule');
 
     useEffect(() => {
         const fetchGames = async () => {
@@ -71,67 +74,92 @@ export default function AdminPage() {
 
     return (
         <div className="space-y-6 pb-20">
-            <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
-                <h1 className="text-xl font-bold">Admin Panel</h1>
-                <div className="space-x-2">
-                    <Button variant="outline" size="sm" onClick={seedPlayers}>Seed Players</Button>
-                    <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
+            <div className="flex flex-col gap-4 bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex justify-between items-center">
+                    <h1 className="text-xl font-bold">Admin Panel</h1>
+                    <div className="space-x-2">
+                        <div className="flex bg-slate-100 p-1 rounded-lg inline-flex">
+                            <button
+                                onClick={() => setView('schedule')}
+                                className={`px-3 py-1 text-sm rounded-md transition ${view === 'schedule' ? 'bg-white shadow text-slate-900 font-bold' : 'text-slate-500 hover:text-slate-900'}`}
+                            >
+                                Schedule
+                            </button>
+                            <button
+                                onClick={() => setView('players')}
+                                className={`px-3 py-1 text-sm rounded-md transition ${view === 'players' ? 'bg-white shadow text-slate-900 font-bold' : 'text-slate-500 hover:text-slate-900'}`}
+                            >
+                                Players
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div className="space-y-4">
-                {games.length === 0 && (
-                    <div className="text-center py-10 text-slate-400">
-                        No games found. Click "Reset / Init Schedule" to generate.
+                {view === 'schedule' && (
+                    <div className="flex justify-end space-x-2">
+                        <Button variant="outline" size="sm" onClick={seedPlayers}>Seed Players</Button>
+                        <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
                     </div>
                 )}
-
-                {games.map(game => (
-                    <Card key={game.id} className="overflow-hidden">
-                        <div className="bg-slate-100 p-2 text-xs flex justify-between font-mono text-slate-500">
-                            <span>#{game.sequence_number} | {game.time_slot} | Crt {game.court_number}</span>
-                            <span className="font-bold uppercase text-slate-900">{game.game_type}</span>
-                        </div>
-                        <CardContent className="p-4 flex flex-col gap-4">
-                            {/* Status Toggle */}
-                            <div className="flex justify-center gap-2">
-                                {['scheduled', 'active', 'completed'].map(s => (
-                                    <button
-                                        key={s}
-                                        onClick={() => updateStatus(game.id, s)}
-                                        className={`px-2 py-1 text-xs rounded border capitalize ${game.status === s ? 'bg-slate-900 text-white' : 'bg-white'}`}
-                                    >
-                                        {s}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Score Inputs */}
-                            <div className="flex justify-between items-center gap-4">
-                                <div className="flex flex-col items-center gap-1">
-                                    <span className="font-bold text-sm">Team A</span>
-                                    <div className="flex items-center gap-2">
-                                        <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'a', Math.max(0, game.score_a - 1))}>-</Button>
-                                        <span className="text-xl font-mono w-8 text-center">{game.score_a}</span>
-                                        <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'a', game.score_a + 1)}>+</Button>
-                                    </div>
-                                </div>
-
-                                <div className="text-slate-300">vs</div>
-
-                                <div className="flex flex-col items-center gap-1">
-                                    <span className="font-bold text-sm">Team B</span>
-                                    <div className="flex items-center gap-2">
-                                        <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'b', Math.max(0, game.score_b - 1))}>-</Button>
-                                        <span className="text-xl font-semibold w-8 text-center">{game.score_b}</span>
-                                        <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'b', game.score_b + 1)}>+</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
             </div>
+
+            {view === 'players' ? (
+                <PlayerManager />
+            ) : (
+                <div className="space-y-4">
+                    {games.length === 0 && (
+                        <div className="text-center py-10 text-slate-400">
+                            No games found. Click "Reset / Init Schedule" to generate.
+                        </div>
+                    )}
+
+                    {games.map(game => (
+                        <Card key={game.id} className="overflow-hidden">
+                            <div className="bg-slate-100 p-2 text-xs flex justify-between font-mono text-slate-500">
+                                <span>#{game.sequence_number} | {game.time_slot} | Crt {game.court_number}</span>
+                                <span className="font-bold uppercase text-slate-900">{game.game_type}</span>
+                            </div>
+                            <CardContent className="p-4 flex flex-col gap-4">
+                                {/* Status Toggle */}
+                                <div className="flex justify-center gap-2">
+                                    {['scheduled', 'active', 'completed'].map(s => (
+                                        <button
+                                            key={s}
+                                            onClick={() => updateStatus(game.id, s)}
+                                            className={`px-2 py-1 text-xs rounded border capitalize ${game.status === s ? 'bg-slate-900 text-white' : 'bg-white'}`}
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Score Inputs */}
+                                <div className="flex justify-between items-center gap-4">
+                                    <div className="flex flex-col items-center gap-1">
+                                        <span className="font-bold text-sm">Team A</span>
+                                        <div className="flex items-center gap-2">
+                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'a', Math.max(0, game.score_a - 1))}>-</Button>
+                                            <span className="text-xl font-mono w-8 text-center">{game.score_a}</span>
+                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'a', game.score_a + 1)}>+</Button>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-slate-300">vs</div>
+
+                                    <div className="flex flex-col items-center gap-1">
+                                        <span className="font-bold text-sm">Team B</span>
+                                        <div className="flex items-center gap-2">
+                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'b', Math.max(0, game.score_b - 1))}>-</Button>
+                                            <span className="text-xl font-semibold w-8 text-center">{game.score_b}</span>
+                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'b', game.score_b + 1)}>+</Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
