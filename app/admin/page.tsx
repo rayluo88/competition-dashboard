@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { generateSchedule } from '@/lib/scheduling';
 import { Card, CardContent } from '@/components/ui/card';
-import { SEED_PLAYERS, TEAMS } from '@/lib/roster';
+import { SEED_PLAYERS, TEAMS, TEAM_A_ID, TEAM_B_ID } from '@/lib/roster';
 
 // Utils to upsert games to Supabase
 async function seedSchedule() {
@@ -48,18 +48,57 @@ import PlayerManager from '@/components/admin/PlayerManager';
 
 export default function AdminPage() {
     const [games, setGames] = useState<Game[]>([]);
+    const [players, setPlayers] = useState<Record<string, string>>({}); // ID -> Name map
+    const [rosters, setRosters] = useState<Record<string, { a: string[], b: string[] }>>({}); // GameID -> { a: [names], b: [names] }
     const [view, setView] = useState<'schedule' | 'players'>('schedule');
 
     useEffect(() => {
-        const fetchGames = async () => {
-            const { data } = await supabase.from('games').select('*').order('sequence_number');
-            if (data) setGames(data as Game[]);
-        };
-        fetchGames();
+        const fetchData = async () => {
+            // 1. Fetch Games
+            const { data: gamesData } = await supabase.from('games').select('*').order('sequence_number');
+            if (gamesData) setGames(gamesData as Game[]);
 
-        const channel = supabase.channel('admin:games')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, () => fetchGames())
+            // 2. Fetch Players
+            const { data: playersData } = await supabase.from('players').select('id, name');
+            const playerMap: Record<string, string> = {};
+            if (playersData) {
+                playersData.forEach((p: any) => playerMap[p.id] = p.name);
+                setPlayers(playerMap);
+            }
+
+            // 3. Fetch Rosters
+            const { data: rostersData } = await supabase.from('game_rosters').select('*');
+            const rosterMap: Record<string, { a: string[], b: string[] }> = {};
+
+            if (rostersData) {
+                rostersData.forEach((r: any) => {
+                    if (!rosterMap[r.game_id]) rosterMap[r.game_id] = { a: [], b: [] };
+
+                    const p1 = playerMap[r.player_1_id];
+                    const p2 = playerMap[r.player_2_id];
+                    const teamKey = r.team_id === TEAM_A_ID ? 'a' : 'b'; // We need to import TEAM_A_ID or assume based on logic
+
+                    // Ideally we use team_id match. Let's start by fetching team IDs or assuming from constants
+                    // For now, let's look up team_id.
+                    if (r.team_id === TEAM_A_ID) { // Team A Hardcoded or Imported
+                        if (p1) rosterMap[r.game_id].a.push(p1);
+                        if (p2) rosterMap[r.game_id].a.push(p2);
+                    } else {
+                        if (p1) rosterMap[r.game_id].b.push(p1);
+                        if (p2) rosterMap[r.game_id].b.push(p2);
+                    }
+                });
+                setRosters(rosterMap);
+            }
+        };
+
+        fetchData();
+
+        const channel = supabase.channel('admin:realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rosters' }, () => fetchData())
             .subscribe();
+
         return () => { supabase.removeChannel(channel); };
     }, []);
 
@@ -143,7 +182,14 @@ export default function AdminPage() {
                                 {/* Score Inputs */}
                                 <div className="flex justify-between items-center gap-4">
                                     <div className="flex flex-col items-center gap-1 w-20">
-                                        <span className="font-bold text-sm">Team A</span>
+                                        <span className="font-bold text-sm">
+                                            Team A
+                                            {rosters[game.id]?.a?.length > 0 && (
+                                                <span className="text-[10px] font-normal text-slate-500 block">
+                                                    ({rosters[game.id].a.join('/')})
+                                                </span>
+                                            )}
+                                        </span>
                                         <input
                                             type="number"
                                             className="w-16 p-2 text-center border rounded text-2xl font-mono"
@@ -156,7 +202,14 @@ export default function AdminPage() {
                                     <div className="text-slate-300">vs</div>
 
                                     <div className="flex flex-col items-center gap-1 w-20">
-                                        <span className="font-bold text-sm">Team B</span>
+                                        <span className="font-bold text-sm">
+                                            Team B
+                                            {rosters[game.id]?.b?.length > 0 && (
+                                                <span className="text-[10px] font-normal text-slate-500 block">
+                                                    ({rosters[game.id].b.join('/')})
+                                                </span>
+                                            )}
+                                        </span>
                                         <input
                                             type="number"
                                             className="w-16 p-2 text-center border rounded text-2xl font-mono"

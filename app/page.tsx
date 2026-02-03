@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Game } from './types';
+import { Game, GameRoster } from './types';
 import { GameCard } from '@/components/GameCard';
 import { supabase } from '@/lib/supabaseClient';
+import { TEAM_A_ID } from '@/lib/roster';
 
 // MOCK DATA for display if DB is empty/unconnected
 const MOCK_GAMES: Game[] = [
@@ -17,22 +18,56 @@ const MOCK_GAMES: Game[] = [
 export default function Home() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
+  const [resolvedRosters, setResolvedRosters] = useState<Record<string, { a: string[], b: string[] }>>({});
 
   useEffect(() => {
     // Initial Fetch
     const fetchGames = async () => {
-      const { data, error } = await supabase
+      // 1. Fetch Games
+      const { data: gamesData } = await supabase
         .from('games')
         .select('*')
         .order('sequence_number', { ascending: true });
 
-      if (data && data.length > 0) {
-        setGames(data as Game[]);
+      if (gamesData && gamesData.length > 0) {
+        setGames(gamesData as Game[]);
       } else {
-        // Fallback to mock data if no DB connection or empty DB
-        console.log("No data from Supabase (or error), using Mock Data for demo.");
         setGames(MOCK_GAMES);
+        setLoading(false);
+        return; // Don't try to fetch rosters for mocks
       }
+
+      // 2. Fetch Players & Rosters in parallel
+      const [playersRes, rostersRes] = await Promise.all([
+        supabase.from('players').select('id, name'),
+        supabase.from('game_rosters').select('*')
+      ]);
+
+      const playerMap: Record<string, string> = {};
+      if (playersRes.data) {
+        playersRes.data.forEach((p: any) => playerMap[p.id] = p.name);
+      }
+
+      const rosterData: Record<string, { a: string[], b: string[] }> = {};
+
+      if (rostersRes.data) {
+        rostersRes.data.forEach((r: any) => {
+          if (!rosterData[r.game_id]) rosterData[r.game_id] = { a: [], b: [] };
+
+          const p1 = playerMap[r.player_1_id];
+          const p2 = playerMap[r.player_2_id];
+
+          if (r.team_id === TEAM_A_ID) {
+            if (p1) rosterData[r.game_id].a.push(p1);
+            if (p2) rosterData[r.game_id].a.push(p2);
+          } else {
+            if (p1) rosterData[r.game_id].b.push(p1);
+            if (p2) rosterData[r.game_id].b.push(p2);
+          }
+        });
+      }
+      setResolvedRosters(rosterData);
+
       setLoading(false);
     };
 
@@ -41,11 +76,8 @@ export default function Home() {
     // Realtime Subscription
     const channel = supabase
       .channel('public:games')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, (payload) => {
-        console.log('Realtime update:', payload);
-        // Simple strategy: Re-fetch or update local state. Re-fetch is safer for consistency.
-        fetchGames();
-      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, () => fetchGames())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rosters' }, () => fetchGames())
       .subscribe();
 
     return () => {
@@ -97,7 +129,11 @@ export default function Home() {
       ) : (
         <div className="space-y-4 pb-20">
           {games.map((game) => (
-            <GameCard key={game.id} game={game} />
+            <GameCard
+              key={game.id}
+              game={game}
+              playerNames={resolvedRosters[game.id]}
+            />
           ))}
         </div>
       )}

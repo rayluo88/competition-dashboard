@@ -19,12 +19,11 @@ const getGameTypeColor = (type: string) => {
 
 interface GameCardProps {
     game: Game;
-    roster?: GameRoster; // This might be complex as we have two teams.
-    // Ideally we receive the resolved player names or just the "Status".
-    // For Public view: Just show Score and "Team A vs Team B" (generic) or Players if known.
+    roster?: GameRoster;
+    playerNames?: { a: string[], b: string[] };
 }
 
-export function GameCard({ game }: GameCardProps) {
+export function GameCard({ game, playerNames }: GameCardProps) {
     return (
         <Card className="mb-4 overflow-hidden border-none shadow-md ring-1 ring-slate-900/5">
             <div className="flex justify-between items-center bg-slate-50 p-3 border-b border-slate-100">
@@ -42,6 +41,11 @@ export function GameCard({ game }: GameCardProps) {
                     {/* Team A */}
                     <div className="text-center w-1/3">
                         <div className="font-bold text-slate-900">Team A</div>
+                        {playerNames?.a && playerNames.a.length > 0 && (
+                            <div className="text-[10px] text-slate-500 font-medium leading-tight mt-1">
+                                {playerNames.a.join('/')}
+                            </div>
+                        )}
                         <div className="text-3xl font-bold mt-1 tabular-nums">{game.score_a}</div>
                     </div>
 
@@ -59,6 +63,11 @@ export function GameCard({ game }: GameCardProps) {
                     {/* Team B */}
                     <div className="text-center w-1/3">
                         <div className="font-bold text-slate-900">Team B</div>
+                        {playerNames?.b && playerNames.b.length > 0 && (
+                            <div className="text-[10px] text-slate-500 font-medium leading-tight mt-1">
+                                {playerNames.b.join('/')}
+                            </div>
+                        )}
                         <div className="text-3xl font-bold mt-1 tabular-nums">{game.score_b}</div>
                     </div>
                 </div>
