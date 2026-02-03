@@ -34,7 +34,7 @@ export default function RootLayout({
                 <circle cx="7" cy="12" r="1.5" fill="currentColor" className="text-yellow-300" />
                 <circle cx="17" cy="12" r="1.5" fill="currentColor" className="text-yellow-300" />
               </svg>
-              <span className="font-black text-yellow-300">CNY Cup</span>
+              <span className="font-black text-yellow-300">TJCC CNY Cup</span>
             </Link>
             <div className="flex gap-4 text-sm font-bold opacity-90">
               <Link href="/" className="hover:text-yellow-200 transition-colors">Matches</Link>

@@ -51,9 +51,14 @@ export default function AdminPage() {
     const [players, setPlayers] = useState<Record<string, string>>({}); // ID -> Name map
     const [rosters, setRosters] = useState<Record<string, { a: string[], b: string[] }>>({}); // GameID -> { a: [names], b: [names] }
     const [view, setView] = useState<'schedule' | 'players'>('schedule');
+    const [restWindow, setRestWindow] = useState<number>(3); // Default 3
 
     useEffect(() => {
         const fetchData = async () => {
+            // 0. Fetch Settings
+            const { data: settingsData } = await supabase.from('app_settings').select('*').eq('key', 'rest_window').single();
+            if (settingsData) setRestWindow(parseInt(settingsData.value));
+
             // 1. Fetch Games
             const { data: gamesData } = await supabase.from('games').select('*').order('sequence_number');
             if (gamesData) setGames(gamesData as Game[]);
@@ -97,6 +102,7 @@ export default function AdminPage() {
         const channel = supabase.channel('admin:realtime')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, () => fetchData())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rosters' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, () => fetchData())
             .subscribe();
 
         return () => { supabase.removeChannel(channel); };
@@ -109,6 +115,11 @@ export default function AdminPage() {
 
     const updateStatus = async (gameId: string, status: string) => {
         await supabase.from('games').update({ status }).eq('id', gameId);
+    };
+
+    const updateRestWindow = async (val: number) => {
+        await supabase.from('app_settings').upsert({ key: 'rest_window', value: val });
+        setRestWindow(val); // Optimistic update
     };
 
     return (
@@ -140,9 +151,34 @@ export default function AdminPage() {
                             <summary className="cursor-pointer text-slate-400 hover:text-slate-600 font-semibold select-none">
                                 Advanced / Danger Zone
                             </summary>
-                            <div className="flex justify-end gap-2 mt-4 p-4 bg-red-50 border border-red-100 rounded-lg">
-                                <Button variant="outline" size="sm" onClick={seedPlayers}>Reset & Seed Players</Button>
-                                <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
+
+                            <div className="mt-4 p-4 bg-slate-50 border rounded-lg space-y-4">
+                                {/* Configuration */}
+                                <div className="flex items-center justify-between">
+                                    <span className="font-bold text-slate-700">Rest Constant (Games)</span>
+                                    <div className="flex gap-1">
+                                        {[0, 1, 2, 3].map(v => (
+                                            <button
+                                                key={v}
+                                                onClick={() => updateRestWindow(v)}
+                                                className={`px-3 py-1 text-xs rounded border transition ${restWindow === v ? 'bg-slate-800 text-white border-slate-800' : 'bg-white text-slate-600 hover:bg-slate-100'}`}
+                                            >
+                                                {v}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="text-[10px] text-slate-400">
+                                    0 = No rest required. 1 = Cannot play consecutive games. 3 = Standard rule.
+                                </div>
+
+                                <div className="h-px bg-slate-200 my-2" />
+
+                                {/* Danger Actions */}
+                                <div className="flex justify-end gap-2">
+                                    <Button variant="outline" size="sm" onClick={seedPlayers}>Reset & Seed Players</Button>
+                                    <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
+                                </div>
                             </div>
                         </details>
                     </div>

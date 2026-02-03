@@ -32,17 +32,17 @@ function CaptainContent() {
             const { data: gamesData } = await supabase.from('games').select('*').order('sequence_number');
             if (gamesData) setGames(gamesData as Game[]);
 
-            // 2. Get Players (All players to check for inactive status globally)
+            // 2. Get Players
             const { data: allPlayers } = await supabase.from('players').select('*');
             if (allPlayers) {
                 const all = allPlayers as Player[];
-                // Check if ANY player is inactive
-                const anyInactive = all.some(p => p.active === false);
-                setRestWindow(anyInactive ? 1 : 3);
-
                 // Filter for THIS team
                 setPlayers(all.filter(p => p.team_id === teamId));
             }
+
+            // 2b. Fetch Rest Window Setting
+            const { data: settingsData } = await supabase.from('app_settings').select('*').eq('key', 'rest_window').single();
+            if (settingsData) setRestWindow(parseInt(settingsData.value));
 
             // 3. Get Existing Rosters
             const { data: rostersData } = await supabase.from('game_rosters').select('*').eq('team_id', teamId);
@@ -71,6 +71,15 @@ function CaptainContent() {
             }
         };
         fetchData();
+
+        const channel = supabase.channel('captain:realtime')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'games' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'game_rosters' }, () => fetchData())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'app_settings' }, () => fetchData())
+            .subscribe();
+
+        return () => { supabase.removeChannel(channel); };
     }, [teamLetter, teamId]);
 
     const handleSelectPlayer = async (gameId: string, slot: 1 | 2, playerId: string) => {
