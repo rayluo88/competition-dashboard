@@ -96,9 +96,16 @@ export default function AdminPage() {
                 </div>
 
                 {view === 'schedule' && (
-                    <div className="flex justify-end space-x-2">
-                        <Button variant="outline" size="sm" onClick={seedPlayers}>Seed Players</Button>
-                        <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
+                    <div className="mt-4 border-t pt-4">
+                        <details className="text-xs">
+                            <summary className="cursor-pointer text-slate-400 hover:text-slate-600 font-semibold select-none">
+                                Advanced / Danger Zone
+                            </summary>
+                            <div className="flex justify-end gap-2 mt-4 p-4 bg-red-50 border border-red-100 rounded-lg">
+                                <Button variant="outline" size="sm" onClick={seedPlayers}>Reset & Seed Players</Button>
+                                <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
+                            </div>
+                        </details>
                     </div>
                 )}
             </div>
