@@ -116,7 +116,7 @@ export default function AdminPage() {
                     {games.map(game => (
                         <Card key={game.id} className="overflow-hidden">
                             <div className="bg-slate-100 p-2 text-xs flex justify-between font-mono text-slate-500">
-                                <span>#{game.sequence_number} | {game.time_slot} | Crt {game.court_number}</span>
+                                <span>Match #{game.sequence_number} | {game.time_slot}</span>
                                 <span className="font-bold uppercase text-slate-900">{game.game_type}</span>
                             </div>
                             <CardContent className="p-4 flex flex-col gap-4">
@@ -135,24 +135,28 @@ export default function AdminPage() {
 
                                 {/* Score Inputs */}
                                 <div className="flex justify-between items-center gap-4">
-                                    <div className="flex flex-col items-center gap-1">
+                                    <div className="flex flex-col items-center gap-1 w-20">
                                         <span className="font-bold text-sm">Team A</span>
-                                        <div className="flex items-center gap-2">
-                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'a', Math.max(0, game.score_a - 1))}>-</Button>
-                                            <span className="text-xl font-mono w-8 text-center">{game.score_a}</span>
-                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'a', game.score_a + 1)}>+</Button>
-                                        </div>
+                                        <input
+                                            type="number"
+                                            className="w-16 p-2 text-center border rounded text-2xl font-mono"
+                                            value={game.score_a}
+                                            onChange={(e) => updateScore(game.id, 'a', parseInt(e.target.value) || 0)}
+                                            onFocus={(e) => e.target.select()}
+                                        />
                                     </div>
 
                                     <div className="text-slate-300">vs</div>
 
-                                    <div className="flex flex-col items-center gap-1">
+                                    <div className="flex flex-col items-center gap-1 w-20">
                                         <span className="font-bold text-sm">Team B</span>
-                                        <div className="flex items-center gap-2">
-                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'b', Math.max(0, game.score_b - 1))}>-</Button>
-                                            <span className="text-xl font-semibold w-8 text-center">{game.score_b}</span>
-                                            <Button size="sm" variant="outline" onClick={() => updateScore(game.id, 'b', game.score_b + 1)}>+</Button>
-                                        </div>
+                                        <input
+                                            type="number"
+                                            className="w-16 p-2 text-center border rounded text-2xl font-mono"
+                                            value={game.score_b}
+                                            onChange={(e) => updateScore(game.id, 'b', parseInt(e.target.value) || 0)}
+                                            onFocus={(e) => e.target.select()}
+                                        />
                                     </div>
                                 </div>
                             </CardContent>

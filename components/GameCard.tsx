@@ -29,7 +29,7 @@ export function GameCard({ game }: GameCardProps) {
         <Card className="mb-4 overflow-hidden border-none shadow-md ring-1 ring-slate-900/5">
             <div className="flex justify-between items-center bg-slate-50 p-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-slate-500">#{game.sequence_number}</span>
+                    <span className="font-mono text-xs text-slate-500">Match #{game.sequence_number}</span>
                     <span className="font-semibold text-sm">{game.time_slot}</span>
                 </div>
                 <span className={cn("px-2 py-0.5 rounded text-xs font-bold", getGameTypeColor(game.game_type))}>
@@ -54,7 +54,6 @@ export function GameCard({ game }: GameCardProps) {
                                 game.status
                             )}
                         </div>
-                        {game.status === 'active' && <div className="text-xs text-slate-400 mt-1">Crt {game.court_number}</div>}
                     </div>
 
                     {/* Team B */}

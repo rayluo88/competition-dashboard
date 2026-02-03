@@ -131,7 +131,7 @@ function CaptainContent() {
                 return (
                     <Card key={game.id} className={locked ? 'opacity-70 bg-slate-50' : 'bg-white'}>
                         <div className="bg-slate-100 p-2 text-xs flex justify-between font-mono text-slate-500">
-                            <span>#{game.sequence_number} | {game.time_slot}</span>
+                            <span>Match #{game.sequence_number} | {game.time_slot}</span>
                             <span className="font-bold">{game.game_type}</span>
                         </div>
                         <CardContent className="p-4 flex gap-4 items-center">
