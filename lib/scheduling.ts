@@ -14,7 +14,7 @@ const TOTAL_GAMES = 28;
 
 // Pattern: WD -> MD -> XD -> WD -> XD
 // This is a 5-game cycle.
-const GAME_TYPE_PATTERN: GameType[] = ['WD', 'MD', 'XD', 'WD', 'XD'];
+const GAME_TYPE_PATTERN: GameType[] = ['XD', 'WD', 'MD', 'WD', 'XD'];
 
 export function generateSchedule(): GameSlot[] {
     const schedule: GameSlot[] = [];
