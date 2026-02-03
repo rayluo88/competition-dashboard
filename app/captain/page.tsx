@@ -38,7 +38,7 @@ function CaptainContent() {
                 const all = allPlayers as Player[];
                 // Check if ANY player is inactive
                 const anyInactive = all.some(p => p.active === false);
-                setRestWindow(anyInactive ? 2 : 3);
+                setRestWindow(anyInactive ? 1 : 3);
 
                 // Filter for THIS team
                 setPlayers(all.filter(p => p.team_id === teamId));
@@ -151,8 +151,8 @@ function CaptainContent() {
                                         return true;
                                     })
                                     .map(p => (
-                                        <option key={p.id} value={p.id} disabled={isPlayerResting(game.sequence_number, gameHistory[p.id] || [])}>
-                                            {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || []) ? '(Resting)' : ''}
+                                        <option key={p.id} value={p.id} disabled={isPlayerResting(game.sequence_number, gameHistory[p.id] || [], restWindow)}>
+                                            {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || [], restWindow) ? `(Resting ${restWindow})` : ''}
                                         </option>
                                     ))}
                             </select>
@@ -173,8 +173,8 @@ function CaptainContent() {
                                         return true;
                                     })
                                     .map(p => (
-                                        <option key={p.id} value={p.id} disabled={p.id === p1?.id || isPlayerResting(game.sequence_number, gameHistory[p.id] || [])}>
-                                            {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || []) ? '(Resting)' : ''}
+                                        <option key={p.id} value={p.id} disabled={p.id === p1?.id || isPlayerResting(game.sequence_number, gameHistory[p.id] || [], restWindow)}>
+                                            {p.name} {isPlayerResting(game.sequence_number, gameHistory[p.id] || [], restWindow) ? `(Resting ${restWindow})` : ''}
                                         </option>
                                     ))}
                             </select>

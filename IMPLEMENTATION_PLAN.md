@@ -43,7 +43,7 @@ Build a mobile-friendly web app for a pickleball team competition (Team A vs Tea
 #### [NEW] `lib/`
 - `scheduling.ts`: Helper to generate the 28-game schedule with the **WD-MD-XD-WD-XD** pattern.
 - `validation.ts`:
-    - `isPlayerResting(playerId, gameHistory)`: Checks the "last 3 games" rule.
+    - `isPlayerResting(playerId, gameHistory)`: Checks the resting rule. Default is **2 games gap** (cannot play if played in last 3 games). **EXCEPTION**: If any player is Inactive, rule relaxes to **0 games gap** (cannot play consecutive games only).
     - `isValidGenderForGameType(player, gameType)`: Enforces MD/WD/XD gender rules.
 
 ## Verification Plan
