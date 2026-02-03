@@ -17,6 +17,7 @@ export interface Player {
     name: string;
     gender: Gender;
     team_id: TeamID;
+    active?: boolean;
 }
 
 export interface Game {

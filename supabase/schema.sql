@@ -10,7 +10,8 @@ CREATE TABLE players (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     gender TEXT NOT NULL CHECK (gender IN ('Male', 'Female')),
-    team_id UUID REFERENCES teams(id) ON DELETE CASCADE
+    team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
+    active BOOLEAN DEFAULT TRUE
 );
 
 -- Create Games table

@@ -21,6 +21,8 @@ function CaptainContent() {
     const [rosters, setRosters] = useState<GameRoster[]>([]);
     const [gameHistory, setGameHistory] = useState<Record<string, number[]>>({}); // PlayerID -> List of Game Sequences
 
+    const [restWindow, setRestWindow] = useState(3);
+
     // Fetch Data
     useEffect(() => {
         if (!teamLetter) return;
@@ -30,11 +32,17 @@ function CaptainContent() {
             const { data: gamesData } = await supabase.from('games').select('*').order('sequence_number');
             if (gamesData) setGames(gamesData as Game[]);
 
-            // 2. Get Players for this team
-            // Note: If DB is empty, this will be empty.
-            // We'll trust the Admin seeded it.
-            const { data: playersData } = await supabase.from('players').select('*').eq('team_id', teamId);
-            if (playersData) setPlayers(playersData as Player[]);
+            // 2. Get Players (All players to check for inactive status globally)
+            const { data: allPlayers } = await supabase.from('players').select('*');
+            if (allPlayers) {
+                const all = allPlayers as Player[];
+                // Check if ANY player is inactive
+                const anyInactive = all.some(p => p.active === false);
+                setRestWindow(anyInactive ? 2 : 3);
+
+                // Filter for THIS team
+                setPlayers(all.filter(p => p.team_id === teamId));
+            }
 
             // 3. Get Existing Rosters
             const { data: rostersData } = await supabase.from('game_rosters').select('*').eq('team_id', teamId);
@@ -76,8 +84,8 @@ function CaptainContent() {
         if (!player) return; // or empty to clear?
 
         // 3. Check Rest Rule
-        if (isPlayerResting(game.sequence_number, gameHistory[playerId] || [])) {
-            alert(`${player.name} needs to rest (played in last 3 games).`);
+        if (isPlayerResting(game.sequence_number, gameHistory[playerId] || [], restWindow)) {
+            alert(`${player.name} needs to rest (played in last ${restWindow} games).`);
             return;
         }
 
@@ -135,6 +143,7 @@ function CaptainContent() {
                             >
                                 <option value="">Select Player 1 {game.game_type === 'XD' ? '(Female)' : ''}</option>
                                 {players
+                                    .filter(p => p.active !== false)
                                     .filter(p => {
                                         if (game.game_type === 'WD') return p.gender === 'Female';
                                         if (game.game_type === 'MD') return p.gender === 'Male';
@@ -156,6 +165,7 @@ function CaptainContent() {
                             >
                                 <option value="">Select Player 2 {game.game_type === 'XD' ? '(Male)' : ''}</option>
                                 {players
+                                    .filter(p => p.active !== false)
                                     .filter(p => {
                                         if (game.game_type === 'WD') return p.gender === 'Female';
                                         if (game.game_type === 'MD') return p.gender === 'Male';

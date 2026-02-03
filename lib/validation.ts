@@ -17,13 +17,14 @@ interface GameHistory {
 // I must not have played in Game #N-1, #N-2, or #N-3.
 export function isPlayerResting(
     targetGameSequence: number,
-    playerGameHistory: number[] // Sequence numbers of games the player played
+    playerGameHistory: number[], // Sequence numbers of games the player played
+    lookbackWindow: number = 3
 ): boolean {
     if (playerGameHistory.length === 0) return false;
 
-    const minAllowedSequence = targetGameSequence - 3;
+    const minAllowedSequence = targetGameSequence - lookbackWindow;
 
-    // Check if any played game falls in the range [target - 3, target - 1]
+    // Check if any played game falls in the range [target - lookbackWindow, target - 1]
     // Note: We only care about previous games, so < targetGameSequence
     return playerGameHistory.some(seq => seq >= minAllowedSequence && seq < targetGameSequence);
 }

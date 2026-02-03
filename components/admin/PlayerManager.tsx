@@ -34,7 +34,8 @@ export default function PlayerManager() {
         const newPlayer = {
             name: newName.trim(),
             gender: newGender,
-            team_id: selectedTeam
+            team_id: selectedTeam,
+            active: true
         };
 
         const { error } = await supabase.from('players').insert(newPlayer);
@@ -128,14 +129,25 @@ export default function PlayerManager() {
                                     />
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-3">
+                                <div className={`flex items-center gap-3 ${p.active === false ? 'opacity-50 line-through' : ''}`}>
                                     <span className={`w-2 h-2 rounded-full ${p.gender === 'Female' ? 'bg-pink-400' : 'bg-blue-400'}`} />
                                     <span className="font-medium">{p.name}</span>
-                                    <span className="text-xs text-slate-400 uppercase">{p.gender}</span>
+                                    <span className="text-xs text-slate-400 uppercase">{p.active === false ? 'Inactive' : p.gender}</span>
                                 </div>
                             )}
 
                             <div className="flex gap-2">
+                                <Button
+                                    className={`text-xs px-2 h-6 ${p.active !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-slate-200 text-slate-500 hover:bg-slate-300'}`}
+                                    variant="ghost"
+                                    onClick={async () => {
+                                        const newActive = p.active === false ? true : false;
+                                        await supabase.from('players').update({ active: newActive }).eq('id', p.id);
+                                        fetchPlayers();
+                                    }}
+                                >
+                                    {p.active !== false ? 'Active' : 'Inactive'}
+                                </Button>
                                 <button
                                     className="text-xs text-slate-500 hover:text-blue-600 px-2"
                                     onClick={() => setIsEditingId(p.id)}
