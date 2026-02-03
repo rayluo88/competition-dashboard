@@ -80,7 +80,10 @@ export default function PlayerManager() {
                                 onClick={() => setSelectedTeam(team.id)}
                                 className={`px-4 py-2 rounded text-sm font-bold border transition
                                     ${selectedTeam === team.id
-                                        ? `bg-${team.color}-500 text-white border-${team.color}-600`
+                                        ? (team.color === 'red'
+                                            ? 'bg-red-500 text-white border-red-600'
+                                            : 'bg-blue-500 text-white border-blue-600'
+                                        )
                                         : 'bg-white text-slate-700 hover:bg-slate-50'
                                     }`}
                             >
