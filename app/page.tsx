@@ -104,8 +104,8 @@ export default function Home() {
           {/* Team A */}
           <div className="text-center flex-1">
             <div className="text-6xl font-black text-yellow-300 drop-shadow-sm leading-none">{teamAWins}</div>
-            <div className="font-bold text-white/90 mt-2 text-lg">Team A</div>
-            <div className="text-xs text-red-100 font-mono mt-1 opacity-80">{teamAPoints} pts</div>
+            <div className="font-bold text-white/90 mt-2 text-lg">Team A 恭喜</div>
+            <div className="text-s text-red-100 font-mono mt-1 opacity-80">{teamAPoints} pts</div>
           </div>
 
           <div className="text-2xl font-black text-white/20 pb-8 italic">VS</div>
@@ -113,8 +113,8 @@ export default function Home() {
           {/* Team B */}
           <div className="text-center flex-1">
             <div className="text-6xl font-black text-yellow-300 drop-shadow-sm leading-none">{teamBWins}</div>
-            <div className="font-bold text-white/90 mt-2 text-lg">Team B</div>
-            <div className="text-xs text-red-100 font-mono mt-1 opacity-80">{teamBPoints} pts</div>
+            <div className="font-bold text-white/90 mt-2 text-lg">Team B 发财</div>
+            <div className="text-s text-red-100 font-mono mt-1 opacity-80">{teamBPoints} pts</div>
           </div>
         </div>
       </section>

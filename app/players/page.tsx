@@ -51,7 +51,16 @@ export default function PlayersStatsPage() {
     }, []);
 
     const renderTeamStats = (teamId: string) => {
-        const teamPlayers = players.filter(p => p.team_id === teamId);
+        const teamPlayers = players
+            .filter(p => p.team_id === teamId)
+            .sort((a, b) => {
+                const countA = stats[a.id] || 0;
+                const countB = stats[b.id] || 0;
+                // Sort by Count Descending
+                if (countB !== countA) return countB - countA;
+                // Then by Name Ascending
+                return a.name.localeCompare(b.name);
+            });
         const team = TEAMS.find(t => t.id === teamId);
 
         return (
