@@ -95,7 +95,7 @@ export default function PlayersStatsPage() {
         <div className="space-y-6 pb-20">
             <h1 className="text-2xl font-bold text-slate-800">Player Statistics</h1>
             <p className="text-sm text-slate-500 bg-yellow-50 p-3 rounded border border-yellow-100 mb-4">
-                Shows total matches scheduled or played. Helps ensures fair rotation.
+                Shows total matches scheduled and played. 
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

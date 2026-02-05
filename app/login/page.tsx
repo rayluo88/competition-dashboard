@@ -48,7 +48,7 @@ export default function LoginPage() {
                         </Button>
                     </form>
                     <div className="mt-4 text-center text-xs text-slate-400">
-                        <p>Admin: admin123</p>
+                        {/* <p>Admin: admin123</p> */}
                         <p>Team A Captain: capA</p>
                         <p>Team B Captain: capB</p>
                     </div>
