@@ -187,8 +187,8 @@ export default function AdminPage() {
 
                                 {/* Danger Actions */}
                                 <div className="flex justify-end gap-2">
-                                    <Button variant="outline" size="sm" onClick={clearSelections}>Clear Selections Only</Button>
-                                    <Button variant="outline" size="sm" onClick={seedPlayers}>Reset & Seed Players</Button>
+                                    <Button variant="outline" size="sm" onClick={clearSelections}>Clear Selections</Button>
+                                    <Button variant="outline" size="sm" onClick={seedPlayers}>Seed Players</Button>
                                     <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
                                 </div>
                             </div>
