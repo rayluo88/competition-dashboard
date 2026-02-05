@@ -44,6 +44,17 @@ async function seedPlayers() {
     else alert('Players seeded successfully!');
 }
 
+async function clearSelections() {
+    const confirmation = confirm("This will remove ALL player selections from games, but keep the schedule and player list intact. Are you sure?");
+    if (!confirmation) return;
+
+    // Delete all roster entries
+    const { error } = await supabase.from('game_rosters').delete().neq('game_id', '00000000-0000-0000-0000-000000000000');
+
+    if (error) alert('Error clearing selections: ' + error.message);
+    else window.location.reload();
+}
+
 import PlayerManager from '@/components/admin/PlayerManager';
 
 export default function AdminPage() {
@@ -176,6 +187,7 @@ export default function AdminPage() {
 
                                 {/* Danger Actions */}
                                 <div className="flex justify-end gap-2">
+                                    <Button variant="outline" size="sm" onClick={clearSelections}>Clear Selections Only</Button>
                                     <Button variant="outline" size="sm" onClick={seedPlayers}>Reset & Seed Players</Button>
                                     <Button variant="destructive" size="sm" onClick={seedSchedule}>Reset Schedule</Button>
                                 </div>
