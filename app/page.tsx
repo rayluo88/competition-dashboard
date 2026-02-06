@@ -132,7 +132,7 @@ export default function Home() {
             <GameCard
               key={game.id}
               game={game}
-              playerNames={resolvedRosters[game.id]}
+              playerNames={game.status === 'completed' ? resolvedRosters[game.id] : undefined}
             />
           ))}
         </div>
